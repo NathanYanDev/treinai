@@ -58,7 +58,7 @@ O banco de dados local armazena:
 5. Registros feitos offline são marcados com uma flag `is_synced: false` e sincronizados assim que a conexão for restaurada.
 
 ## 🛣️ Roadmap
-- [ ] Setup inicial da estrutura de pastas e DI.
+- [x] Setup inicial da estrutura de pastas e DI.
 - [ ] Implementação da camada de persistência local (SQLite).
 - [ ] Interface de Onboarding.
 - [ ] Integração com a API de geração de treinos.
