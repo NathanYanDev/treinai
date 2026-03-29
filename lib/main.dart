@@ -22,7 +22,7 @@ class App extends StatelessWidget {
       theme: AppTheme.dark,
       home: BlocProvider(
         create: (_) => OnboardingCubit(),
-        child: const ProfileScreen(),
+        child: const WorkoutCompleteScreen(),
       ),
     );
   }
