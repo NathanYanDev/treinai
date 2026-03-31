@@ -15,7 +15,7 @@ abstract final class AppTypography {
   // Font families base
   // ---------------------------------------------------------------------------
   static TextStyle get _syne => GoogleFonts.syne();
-  static TextStyle get _dmSans => GoogleFonts.dmSans();
+  static TextStyle get _barlow => GoogleFonts.barlow();
 
   // ---------------------------------------------------------------------------
   // DISPLAY — Syne · Telas: Splash, Loading IA, Treino Concluído
@@ -84,7 +84,7 @@ abstract final class AppTypography {
   // ---------------------------------------------------------------------------
 
   /// "Crossover" (exercício atual na execução) · 20px · SemiBold · DM Sans
-  static TextStyle get titleLg => _dmSans.copyWith(
+  static TextStyle get titleLg => _barlow.copyWith(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
@@ -92,7 +92,7 @@ abstract final class AppTypography {
   );
 
   /// "Supino Reto" (lista de exercícios) · 16px · SemiBold · DM Sans
-  static TextStyle get titleMd => _dmSans.copyWith(
+  static TextStyle get titleMd => _barlow.copyWith(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
@@ -100,7 +100,7 @@ abstract final class AppTypography {
   );
 
   /// "Bom dia 👋" / "João Silva" · 14px · Medium · DM Sans
-  static TextStyle get titleSm => _dmSans.copyWith(
+  static TextStyle get titleSm => _barlow.copyWith(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
@@ -112,7 +112,7 @@ abstract final class AppTypography {
   // ---------------------------------------------------------------------------
 
   /// Descrições de opções no onboarding · 15px · Regular · DM Sans
-  static TextStyle get bodyLg => _dmSans.copyWith(
+  static TextStyle get bodyLg => _barlow.copyWith(
     fontSize: 15,
     fontWeight: FontWeight.w400,
     color: AppColors.textSecondary,
@@ -120,7 +120,7 @@ abstract final class AppTypography {
   );
 
   /// Metadados de cards ("8 exercícios · ~55 min") · 13px · Regular · DM Sans
-  static TextStyle get bodyMd => _dmSans.copyWith(
+  static TextStyle get bodyMd => _barlow.copyWith(
     fontSize: 13,
     fontWeight: FontWeight.w400,
     color: AppColors.textSecondary,
@@ -128,7 +128,7 @@ abstract final class AppTypography {
   );
 
   /// Hints, rótulos de input ("EMAIL") · 11px · Medium · DM Sans
-  static TextStyle get bodySm => _dmSans.copyWith(
+  static TextStyle get bodySm => _barlow.copyWith(
     fontSize: 11,
     fontWeight: FontWeight.w500,
     color: AppColors.textTertiary,
@@ -141,7 +141,7 @@ abstract final class AppTypography {
   // ---------------------------------------------------------------------------
 
   /// Dias da semana ("Seg", "Ter") · 12px · SemiBold · DM Sans
-  static TextStyle get labelLg => _dmSans.copyWith(
+  static TextStyle get labelLg => _barlow.copyWith(
     fontSize: 12,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
@@ -149,7 +149,7 @@ abstract final class AppTypography {
   );
 
   /// "HOJE", "EM ANDAMENTO" · 10px · Bold · DM Sans · uppercase
-  static TextStyle get labelSm => _dmSans.copyWith(
+  static TextStyle get labelSm => _barlow.copyWith(
     fontSize: 10,
     fontWeight: FontWeight.w700,
     color: AppColors.textOnAccent,
@@ -162,7 +162,7 @@ abstract final class AppTypography {
   // ---------------------------------------------------------------------------
 
   /// "ENTRAR", "PRÓXIMO", "INICIAR TREINO" · 15px · Bold · DM Sans
-  static TextStyle get buttonLg => _dmSans.copyWith(
+  static TextStyle get buttonLg => _barlow.copyWith(
     fontSize: 15,
     fontWeight: FontWeight.w700,
     color: AppColors.textOnAccent,
@@ -171,7 +171,7 @@ abstract final class AppTypography {
   );
 
   /// "CRIAR CONTA", "PULAR SÉRIE" (secondary) · 14px · SemiBold · DM Sans
-  static TextStyle get buttonMd => _dmSans.copyWith(
+  static TextStyle get buttonMd => _barlow.copyWith(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
@@ -179,7 +179,7 @@ abstract final class AppTypography {
   );
 
   /// Texto de link ("Esqueci minha senha") · 13px · Medium · DM Sans
-  static TextStyle get link => _dmSans.copyWith(
+  static TextStyle get link => _barlow.copyWith(
     fontSize: 13,
     fontWeight: FontWeight.w500,
     color: AppColors.textAccent,
@@ -207,7 +207,7 @@ abstract final class AppTypography {
   );
 
   /// "Exercícios", "Duração" (label das stats) · 11px · Regular · DM Sans
-  static TextStyle get statLabel => _dmSans.copyWith(
+  static TextStyle get statLabel => _barlow.copyWith(
     fontSize: 11,
     fontWeight: FontWeight.w400,
     color: AppColors.textTertiary,
@@ -219,7 +219,7 @@ abstract final class AppTypography {
   // ---------------------------------------------------------------------------
 
   /// Valor digitado no input · 15px · Regular · DM Sans
-  static TextStyle get inputValue => _dmSans.copyWith(
+  static TextStyle get inputValue => _barlow.copyWith(
     fontSize: 15,
     fontWeight: FontWeight.w400,
     color: AppColors.inputText,
@@ -227,7 +227,7 @@ abstract final class AppTypography {
   );
 
   /// Placeholder do input · 15px · Regular · DM Sans
-  static TextStyle get inputHint => _dmSans.copyWith(
+  static TextStyle get inputHint => _barlow.copyWith(
     fontSize: 15,
     fontWeight: FontWeight.w400,
     color: AppColors.inputHint,
@@ -248,7 +248,7 @@ abstract final class AppTypography {
   );
 
   /// "SEU PERSONAL INTELIGENTE" (subtítulo do splash) · 11px · Medium · DM Sans
-  static TextStyle get logoSubtitle => _dmSans.copyWith(
+  static TextStyle get logoSubtitle => _barlow.copyWith(
     fontSize: 11,
     fontWeight: FontWeight.w500,
     color: AppColors.textTertiary,
@@ -259,7 +259,7 @@ abstract final class AppTypography {
   // ---------------------------------------------------------------------------
   // ETAPA — DM Sans · "ETAPA 3 DE 5" no onboarding
   // ---------------------------------------------------------------------------
-  static TextStyle get stepLabel => _dmSans.copyWith(
+  static TextStyle get stepLabel => _barlow.copyWith(
     fontSize: 12,
     fontWeight: FontWeight.w600,
     color: AppColors.lime500,
