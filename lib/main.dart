@@ -4,9 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/theme/app_theme.dart';
 import 'presentation/bloc/onboarding_cubit.dart';
 import 'presentation/pages/onboarding/onboarding_router.dart'; //rotas do onboarding
+import 'presentation/pages/workout_details.dart'; // detalhes do treino
+import 'presentation/pages/workout_progress.dart'; // progresso do treino
 import 'presentation/pages/workout_complete_screen.dart'; //conclusão do treino
 import 'presentation/pages/profile_screen.dart'; //tela sobre
 import 'presentation/pages/login/login_page.dart'; // tela login
+
+
 
 void main() {
   runApp(const App());
