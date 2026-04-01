@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:treinai/main.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/theme/app_theme.dart';
+
+void main() {
+  runApp(const App());
+}
 
 class WorkoutCompleteScreen extends StatelessWidget {
   const WorkoutCompleteScreen({super.key});

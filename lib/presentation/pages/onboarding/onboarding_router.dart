@@ -15,9 +15,7 @@ import 'onboarding_level_page.dart';
 import 'onboarding_physical_limitation_page.dart';
 import 'onboarding_muscular_focus_page.dart';
 
-void main() {
-  runApp(const App());
-}
+
 
 class App extends StatelessWidget {
   const App({super.key});

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import 'package:treinai/presentation/pages/onboarding/onboarding_router.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 
@@ -159,7 +162,13 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(  
+                            builder: (_) => const OnboardingRouter(),
+                          ),
+                        );},
                       child: Text('ENTRAR', style: AppTypography.buttonLg),
                     ),
                   ),
