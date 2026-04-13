@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:treinai/app_routes.dart';
 import 'package:treinai/core/theme/app_theme.dart';
 import 'package:treinai/presentation/pages/workout_complete_screen.dart';
 
@@ -9,7 +10,7 @@ Widget _wrap(Widget child) {
     theme: AppTheme.dark,
     home: child,
     routes: {
-      '/workouts': (_) => const Scaffold(body: Text('Workouts')),
+      AppRoutes.workouts: (_) => const Scaffold(body: Text('Workouts')),
     },
   );
 }
@@ -45,7 +46,7 @@ void main() {
         expect(find.textContaining('Treino concluído'), findsOneWidget);
 
         expect(
-          find.textContaining('Incrível! Você completou o Treino A hoje.'),
+          find.textContaining('Você completou o Treino A hoje.'),
           findsOneWidget,
         );
       },
@@ -86,7 +87,7 @@ void main() {
         await _scrollTo(tester, find.textContaining('Sequência'));
 
         expect(find.textContaining('Sequência de 8 dias'), findsOneWidget);
-        expect(find.textContaining('Novo recorde'), findsOneWidget);
+        expect(find.textContaining('Novo recorde pessoal'), findsOneWidget);
       },
     );
 

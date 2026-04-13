@@ -22,6 +22,7 @@ class OnboardingState extends Equatable {
     this.ageRange,
     this.limitations = const {},
     this.muscularFocus = const {},
+    this.hasSubmitted = false,
   });
 
   final int currentStep;
@@ -34,6 +35,7 @@ class OnboardingState extends Equatable {
   final AgeRange? ageRange;
   final Set<PhysicalLimitation> limitations;
   final Set<MuscularFocus> muscularFocus;
+  final bool hasSubmitted;
 
   bool get canAdvance => goal != null;
 
@@ -48,6 +50,7 @@ class OnboardingState extends Equatable {
     AgeRange? ageRange,
     Set<PhysicalLimitation>? limitations,
     Set<MuscularFocus>? muscularFocus,
+    bool? hasSubmitted,
   }) {
     return OnboardingState(
       currentStep: currentStep ?? this.currentStep,
@@ -60,6 +63,7 @@ class OnboardingState extends Equatable {
       ageRange: ageRange ?? this.ageRange,
       limitations: limitations ?? this.limitations,
       muscularFocus: muscularFocus ?? this.muscularFocus,
+      hasSubmitted: hasSubmitted ?? this.hasSubmitted,
     );
   }
 
@@ -75,5 +79,6 @@ class OnboardingState extends Equatable {
     ageRange,
     limitations,
     muscularFocus,
+    hasSubmitted,
   ];
 }

@@ -91,6 +91,6 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   void _submit() {
-    // TODO: chamar o caso de uso de salvar o perfil
+    emit(state.copyWith(hasSubmitted: true));
   }
 }
