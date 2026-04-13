@@ -56,7 +56,9 @@ class OnboardingOptionCard extends StatelessWidget {
                       Text(
                         title,
                         style: AppTypography.titleMd.copyWith(
-                          color: AppColors.textPrimary,
+                          color: isSelected
+                              ? AppColors.lime500
+                              : AppColors.textPrimary,
                           fontWeight: isSelected
                               ? FontWeight.w600
                               : FontWeight.w500,

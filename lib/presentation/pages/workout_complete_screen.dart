@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
+
+import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import 'workout_complete_args.dart';
 
 class WorkoutCompleteScreen extends StatelessWidget {
-  const WorkoutCompleteScreen({super.key});
+  const WorkoutCompleteScreen({super.key, this.args});
+
+  final WorkoutCompleteArgs? args;
+
+  WorkoutCompleteArgs get _a => args ?? WorkoutCompleteArgs.defaults();
 
   @override
   Widget build(BuildContext context) {
+    final a = _a;
+    final exStr = '${a.completedExercises}/${a.totalExercises}';
+
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: Stack(
         children: [
-          // ── Glow de fundo ─────────────────────────────────────────────
           Positioned.fill(
             child: Align(
               alignment: const Alignment(0, -0.4),
@@ -30,18 +39,20 @@ class WorkoutCompleteScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // ── Conteúdo ──────────────────────────────────────────────────
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 32,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // — Hero section —
+                  Text(
+                    '08 · TREINO CONCLUÍDO',
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.textTertiary,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Container(
                     width: 68,
                     height: 68,
@@ -63,44 +74,49 @@ class WorkoutCompleteScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Incrível! Você completou o Treino A hoje.\nContinue assim para ver resultados reais.',
+                    'Você completou o ${a.workoutLabel} hoje.\nContinue assim para ver resultados reais.',
                     style: AppTypography.bodyLg,
                     textAlign: TextAlign.center,
                   ),
-
                   const SizedBox(height: 32),
-
-                  // — Stats grid —
                   GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 2,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
-                    childAspectRatio: 1.5, // 👈 ajustado
-                    children: const [
+                    childAspectRatio: 1.5,
+                    children: [
                       _StatCard(
-                        value: '8/8',
+                        value: exStr,
                         label: 'Exercícios',
-                        highlight: true,
+                        valueColor: AppColors.lime500,
                       ),
-                      _StatCard(value: '52min', label: 'Duração'),
-                      _StatCard(value: '24', label: 'Séries totais'),
-                      _StatCard(value: '288', label: 'Reps totais'),
+                      _StatCard(
+                        value: '${a.durationMinutes}min',
+                        label: 'Duração',
+                        valueColor: AppColors.textPrimary,
+                      ),
+                      _StatCard(
+                        value: '${a.totalSets}',
+                        label: 'Séries totais',
+                        valueColor: AppColors.statYellow,
+                      ),
+                      _StatCard(
+                        value: '${a.totalReps}',
+                        label: 'Reps totais',
+                        valueColor: AppColors.statTeal,
+                      ),
                     ],
                   ),
-
                   const SizedBox(height: 12),
-
-                  // — Streak card —
-                  const _StreakCard(days: 8, isRecord: true),
-
+                  _StreakCard(days: a.streakDays, isRecord: a.isNewRecord),
                   const SizedBox(height: 40),
-
-                  // — Botões —
                   ElevatedButton(
                     onPressed: () {
-                      // TODO: navegar para histórico
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Histórico em breve.')),
+                      );
                     },
                     child: const Text('VER HISTÓRICO'),
                   ),
@@ -109,13 +125,12 @@ class WorkoutCompleteScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushNamedAndRemoveUntil(
                         context,
-                        '/workouts',
+                        AppRoutes.workouts,
                         (route) => false,
                       );
                     },
                     child: const Text('VOLTAR AO INÍCIO'),
                   ),
-
                   const SizedBox(height: 8),
                 ],
               ),
@@ -127,19 +142,16 @@ class WorkoutCompleteScreen extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// _StatCard
-// ─────────────────────────────────────────────────────────────────────────────
 class _StatCard extends StatelessWidget {
   const _StatCard({
     required this.value,
     required this.label,
-    this.highlight = false,
+    required this.valueColor,
   });
 
   final String value;
   final String label;
-  final bool highlight;
+  final Color valueColor;
 
   @override
   Widget build(BuildContext context) {
@@ -151,22 +163,18 @@ class _StatCard extends StatelessWidget {
         border: Border.all(color: AppColors.cardBorder),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center, // 👈 centraliza
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             value,
-            style: highlight
-                ? AppTypography.statValueXl
-                : AppTypography.statValueXl.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
+            style: AppTypography.statValueXl.copyWith(color: valueColor),
           ),
           const SizedBox(height: 4),
           Text(
             label.toUpperCase(),
             maxLines: 1,
-            overflow: TextOverflow.ellipsis, // 👈 evita quebrar layout
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.statLabel.copyWith(letterSpacing: 0.7),
           ),
         ],
@@ -175,9 +183,6 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// _StreakCard
-// ─────────────────────────────────────────────────────────────────────────────
 class _StreakCard extends StatelessWidget {
   const _StreakCard({required this.days, this.isRecord = false});
 
@@ -213,7 +218,7 @@ class _StreakCard extends StatelessWidget {
                 if (isRecord) ...[
                   const SizedBox(height: 2),
                   Text(
-                    'Novo recorde pessoal! 🏆',
+                    'Novo recorde pessoal!',
                     style: AppTypography.bodySm.copyWith(
                       color: AppColors.textTertiary,
                       letterSpacing: 0,

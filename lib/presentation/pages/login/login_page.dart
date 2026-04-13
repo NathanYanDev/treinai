@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 
@@ -11,9 +13,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController(
-    text: '',
+    text: 'joao@email.com',
   );
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController(
+    text: '123456',
+  );
   bool _obscurePassword = true;
 
   @override
@@ -147,7 +151,13 @@ class _LoginPageState extends State<LoginPage> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Recuperação de senha em breve.'),
+                      ),
+                    );
+                  },
                   child: Text('Esqueci minha senha', style: AppTypography.link),
                 ),
               ),
@@ -159,14 +169,30 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        final email = _emailController.text.trim();
+                        final pass = _passwordController.text.trim();
+                        if (email.isEmpty || pass.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Preencha email e senha.'),
+                            ),
+                          );
+                          return;
+                        }
+                        Navigator.of(context).pushReplacementNamed(
+                          AppRoutes.onboarding,
+                        );
+                      },
                       child: Text('ENTRAR', style: AppTypography.buttonLg),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(AppRoutes.register);
+                      },
                       child: Text('CRIAR CONTA', style: AppTypography.buttonMd),
                     ),
                   ),
@@ -191,7 +217,11 @@ class _LoginPageState extends State<LoginPage> {
 
               // ── Google ────────────────────────────────────────────────────
               OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Google Sign-In em breve.')),
+                  );
+                },
                 icon: const Icon(
                   Icons.language,
                   color: AppColors.iconSecondary,

@@ -126,6 +126,10 @@ abstract final class AppColors {
   static const Color loadingDotDone = lime500;
   static const Color loadingDotPending = grey700;
 
+  /// Stats na tela de treino concluído (mockup)
+  static const Color statYellow = Color(0xFFFFD700);
+  static const Color statTeal = Color(0xFF00FF9D);
+
   // Streak badge
   static const Color streakBackground = fireSubtle;
   static const Color streakBorder = fire;

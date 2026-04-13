@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:treinai/app_routes.dart';
 import 'package:treinai/core/theme/app_theme.dart';
+import 'package:treinai/presentation/pages/edit_profile_screen.dart';
 import 'package:treinai/presentation/pages/profile_screen.dart';
 
 Widget _wrap(Widget child) {
@@ -9,7 +11,8 @@ Widget _wrap(Widget child) {
     theme: AppTheme.dark,
     home: child,
     routes: {
-      '/login': (_) => const Scaffold(body: Text('Login')),
+      AppRoutes.login: (_) => const Scaffold(body: Text('Login')),
+      AppRoutes.editProfile: (_) => const EditProfileScreen(),
     },
   );
 }
@@ -66,7 +69,7 @@ void main() {
         expect(find.text('Objetivo'), findsOneWidget);
         expect(find.text('Ganhar massa'), findsOneWidget);
         expect(find.text('Local de treino'), findsOneWidget);
-        expect(find.text('Academia completa'), findsOneWidget);
+        expect(find.text('Academia'), findsOneWidget);
         expect(find.text('Frequência'), findsOneWidget);
         expect(find.text('4× semana'), findsOneWidget);
         expect(find.text('Nível'), findsOneWidget);
