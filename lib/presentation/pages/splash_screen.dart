@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/repositories/auth_repository.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,9 +25,19 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 2000),
     )..forward();
 
-    _controller.addStatusListener((status) {
+    _controller.addStatusListener((status) async {
       if (status == AnimationStatus.completed && mounted) {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+        final session = await context.read<AuthRepository>().getCurrentSession();
+
+        if (!mounted) return;
+
+        if (session != null) {
+          // Já logado: Pula direto para a lista de treinos
+          Navigator.of(context).pushReplacementNamed(AppRoutes.workouts);
+        } else {
+          // Não logado: Vai para o login
+          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+        }
       }
     });
   }

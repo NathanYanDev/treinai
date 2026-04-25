@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/models/workout.dart';
+import '../../domain/models/workout_template_mapper.dart';
 import '../../domain/models/workout_template.dart';
-import '../../domain/workout_mock_data.dart';
 
 /// Letras dos dias: D S T Q Q S S (domingo primeiro)
 const _kCalendarLetters = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -16,7 +17,17 @@ class WorkoutDetailScreen extends StatelessWidget {
 
   static WorkoutTemplate resolveArgs(Object? arguments) {
     if (arguments is WorkoutTemplate) return arguments;
-    return WorkoutMockData.templates.first;
+    if (arguments is Workout) return arguments.toTemplate();
+    return const WorkoutTemplate(
+      id: 'fallback',
+      codeLabel: 'Treino',
+      muscleTitle: 'Sem detalhes',
+      exerciseCount: 0,
+      durationMinutes: 0,
+      sessionsHighlight: '0x',
+      scheduledWeekdays: [1, 3, 5],
+      exercises: [],
+    );
   }
 
   @override

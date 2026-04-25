@@ -9,11 +9,22 @@ import '../../domain/models/biological_sex.dart';
 import '../../domain/models/age_range.dart';
 import '../../domain/models/physical_limitation.dart';
 import '../../domain/models/muscular_focus.dart';
+import '../../domain/models/user_onboarding.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/onboarding_repository.dart';
 
 import 'onboarding_state.dart';
 
 class OnboardingCubit extends Cubit<OnboardingState> {
-  OnboardingCubit() : super(const OnboardingState());
+  OnboardingCubit({
+    OnboardingRepository? repository,
+    AuthRepository? authRepository,
+  }) : _repository = repository,
+       _authRepository = authRepository,
+       super(const OnboardingState());
+
+  final OnboardingRepository? _repository;
+  final AuthRepository? _authRepository;
 
   static const int totalSteps = 9;
 
@@ -90,7 +101,70 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     }
   }
 
-  void _submit() {
-    emit(state.copyWith(hasSubmitted: true));
+  Future<void> _submit() async {
+    if (_repository == null) {
+      emit(
+        state.copyWith(
+          hasSubmitted: true,
+          status: OnboardingStatus.success,
+          clearErrorMessage: true,
+        ),
+      );
+      return;
+    }
+
+    final s = state;
+    if (s.goal == null ||
+        s.location == null ||
+        s.daysPerWeek == null ||
+        s.minutesPerSession == null ||
+        s.level == null ||
+        s.gender == null ||
+        s.ageRange == null) {
+      emit(
+        state.copyWith(
+          status: OnboardingStatus.failure,
+          errorMessage: 'Preencha todas as informações antes de continuar.',
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(status: OnboardingStatus.loading, clearErrorMessage: true),
+    );
+
+    try {
+      final session = await _authRepository?.getCurrentSession();
+      final userId = session?.userId ?? 'current_user';
+      final onboarding = UserOnboarding(
+        userId: userId,
+        goal: s.goal!.promptKey,
+        location: s.location!.promptKey,
+        daysPerWeek: int.parse(s.daysPerWeek!.promptKey),
+        durationMinutes: int.parse(s.minutesPerSession!.promptKey),
+        level: s.level!.promptKey,
+        gender: s.gender!.promptKey,
+        ageRange: s.ageRange!.promptKey,
+        limitations: s.limitations.map((l) => l.promptKey).toList(),
+        muscularFocus: s.muscularFocus.map((f) => f.promptKey).toList(),
+      );
+
+      await _repository.saveOnboarding(onboarding);
+      emit(
+        state.copyWith(
+          hasSubmitted: true,
+          status: OnboardingStatus.success,
+          clearErrorMessage: true,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: OnboardingStatus.failure,
+          errorMessage: 'Não foi possível salvar o perfil. Tente novamente.',
+        ),
+      );
+    }
   }
 }

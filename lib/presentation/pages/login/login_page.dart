@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../domain/repositories/auth_repository.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -169,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         final email = _emailController.text.trim();
                         final pass = _passwordController.text.trim();
                         if (email.isEmpty || pass.isEmpty) {
@@ -180,9 +182,25 @@ class _LoginPageState extends State<LoginPage> {
                           );
                           return;
                         }
-                        Navigator.of(context).pushReplacementNamed(
-                          AppRoutes.onboarding,
+                        final authRepository = context.read<AuthRepository>();
+                        final session = await authRepository.login(
+                          email: email,
+                          password: pass,
                         );
+
+                        if (!mounted) return;
+
+                        if (session.isFallbackToken) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'API indisponível. Login local seguro ativado.',
+                              ),
+                            ),
+                          );
+                        }
+
+                        Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
                       },
                       child: Text('ENTRAR', style: AppTypography.buttonLg),
                     ),

@@ -12,7 +12,6 @@ import 'onboarding_days_per_week_page.dart';
 import 'onboarding_level_page.dart';
 import 'onboarding_physical_limitation_page.dart';
 import 'onboarding_muscular_focus_page.dart';
-
 class OnboardingRouter extends StatelessWidget {
   const OnboardingRouter({super.key});
 

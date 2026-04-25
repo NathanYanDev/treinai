@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/models/completed_workout.dart';
+import '../../domain/models/workout.dart';
 import '../../domain/models/workout_exercise.dart';
+import '../../domain/models/workout_template_mapper.dart';
 import '../../domain/models/workout_template.dart';
-import '../../domain/workout_mock_data.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../bloc/workout_cubit.dart';
 import 'workout_complete_args.dart';
 
 class WorkoutExecutionScreen extends StatefulWidget {
@@ -15,7 +20,25 @@ class WorkoutExecutionScreen extends StatefulWidget {
 
   static WorkoutTemplate resolveArgs(Object? arguments) {
     if (arguments is WorkoutTemplate) return arguments;
-    return WorkoutMockData.templates.first;
+    if (arguments is Workout) return arguments.toTemplate();
+    return const WorkoutTemplate(
+      id: 'fallback',
+      codeLabel: 'Treino',
+      muscleTitle: 'Sem detalhes',
+      exerciseCount: 1,
+      durationMinutes: 1,
+      sessionsHighlight: '1x',
+      scheduledWeekdays: [1],
+      exercises: [
+        WorkoutExercise(
+          name: 'Exercício',
+          sets: 1,
+          repsLabel: '10',
+          restSeconds: 60,
+          weightKg: 0,
+        ),
+      ],
+    );
   }
 
   @override
@@ -44,11 +67,24 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen> {
       (_completedExerciseCount + (_setIndex - 1) / _current.sets) /
       _totalExercises;
 
-  void _finishWorkout() {
+  Future<void> _finishWorkout() async {
     final totalSets = _exercises.fold<int>(0, (a, e) => a + e.sets);
     const repsPerSet = 10;
     final totalReps = totalSets * repsPerSet;
     final minutes = widget.template.durationMinutes;
+    final session = await context.read<AuthRepository>().getCurrentSession();
+    final userId = session?.userId ?? 'current_user';
+
+    await context.read<WorkoutCubit>().saveCompletedWorkout(
+          CompletedWorkout(
+            workoutId: widget.template.id,
+            userId: userId,
+            completedAt: DateTime.now(),
+            durationMinutes: minutes,
+            totalSets: totalSets,
+            totalReps: totalReps,
+          ),
+        );
 
     final args = WorkoutCompleteArgs(
       workoutLabel: widget.template.codeLabel,
