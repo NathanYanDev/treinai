@@ -19,10 +19,9 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   OnboardingCubit({
     OnboardingRepository? repository,
     AuthRepository? authRepository,
-  })
-      : _repository = repository,
-        _authRepository = authRepository,
-        super(const OnboardingState());
+  }) : _repository = repository,
+       _authRepository = authRepository,
+       super(const OnboardingState());
 
   final OnboardingRepository? _repository;
   final AuthRepository? _authRepository;
@@ -122,18 +121,17 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         s.level == null ||
         s.gender == null ||
         s.ageRange == null) {
-      emit(state.copyWith(
-        status: OnboardingStatus.failure,
-        errorMessage: 'Preencha todas as informações antes de continuar.',
-      ));
+      emit(
+        state.copyWith(
+          status: OnboardingStatus.failure,
+          errorMessage: 'Preencha todas as informações antes de continuar.',
+        ),
+      );
       return;
     }
 
     emit(
-      state.copyWith(
-        status: OnboardingStatus.loading,
-        clearErrorMessage: true,
-      ),
+      state.copyWith(status: OnboardingStatus.loading, clearErrorMessage: true),
     );
 
     try {
@@ -152,7 +150,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         muscularFocus: s.muscularFocus.map((f) => f.promptKey).toList(),
       );
 
-      await _repository!.saveOnboarding(onboarding);
+      await _repository.saveOnboarding(onboarding);
       emit(
         state.copyWith(
           hasSubmitted: true,
@@ -161,10 +159,12 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(
-        status: OnboardingStatus.failure,
-        errorMessage: 'Não foi possível salvar o perfil. Tente novamente.',
-      ));
+      emit(
+        state.copyWith(
+          status: OnboardingStatus.failure,
+          errorMessage: 'Não foi possível salvar o perfil. Tente novamente.',
+        ),
+      );
     }
   }
 }

@@ -5,7 +5,6 @@ import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../domain/repositories/auth_repository.dart';
-import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -36,15 +35,9 @@ class ProfileScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'SUA CONTA',
-                      style: AppTypography.headingSm,
-                    ),
+                    Text('SUA CONTA', style: AppTypography.headingSm),
                     const SizedBox(height: 4),
-                    Text(
-                      'Perfil',
-                      style: AppTypography.displaySm,
-                    ),
+                    Text('Perfil', style: AppTypography.displaySm),
                   ],
                 ),
               ),
@@ -59,7 +52,6 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-
                     Container(
                       width: 54,
                       height: 54,
@@ -80,19 +72,12 @@ class ProfileScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'João Silva',
-                            style: AppTypography.titleLg,
-                          ),
+                          Text('João Silva', style: AppTypography.titleLg),
                           const SizedBox(height: 2),
-                          Text(
-                            'joao@email.com',
-                            style: AppTypography.bodyMd,
-                          ),
+                          Text('joao@email.com', style: AppTypography.bodyMd),
                         ],
                       ),
                     ),
-
 
                     TextButton(
                       onPressed: () {
@@ -121,7 +106,6 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-
               _ProfileSection(
                 title: 'MEU PERFIL DE TREINO',
                 children: [
@@ -148,7 +132,6 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
 
-
               _ProfileSection(
                 title: 'CONFIGURAÇÕES',
                 children: [
@@ -168,7 +151,7 @@ class ProfileScreen extends StatelessWidget {
                       await context.read<AuthRepository>().logout();
 
                       if (!context.mounted) return;
-                      
+
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         AppRoutes.login,
@@ -188,12 +171,8 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-
 class _ProfileSection extends StatelessWidget {
-  const _ProfileSection({
-    required this.title,
-    required this.children,
-  });
+  const _ProfileSection({required this.title, required this.children});
 
   final String title;
   final List<Widget> children;
@@ -220,7 +199,6 @@ class _ProfileSection extends StatelessWidget {
   }
 }
 
-
 class _ProfileRow extends StatelessWidget {
   const _ProfileRow({
     required this.icon,
@@ -240,8 +218,9 @@ class _ProfileRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color rowColor =
-        isDestructive ? AppColors.textDanger : AppColors.textPrimary;
+    final Color rowColor = isDestructive
+        ? AppColors.textDanger
+        : AppColors.textPrimary;
 
     final Color iconBg = isDestructive
         ? AppColors.error.withValues(alpha: 0.10)
@@ -276,7 +255,6 @@ class _ProfileRow extends StatelessWidget {
             ),
             const SizedBox(width: 12),
 
-     
             Expanded(
               child: Text(
                 label,
@@ -284,7 +262,6 @@ class _ProfileRow extends StatelessWidget {
               ),
             ),
 
-        
             if (value != null) ...[
               const SizedBox(width: 8),
               Text(
