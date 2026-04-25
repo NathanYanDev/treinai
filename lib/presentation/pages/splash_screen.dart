@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/services/secure_storage_service.dart';
 import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -14,6 +15,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  final _storageService = SecureStorageService();
 
   @override
   void initState() {
@@ -23,9 +25,19 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 2000),
     )..forward();
 
-    _controller.addStatusListener((status) {
+    _controller.addStatusListener((status) async {
       if (status == AnimationStatus.completed && mounted) {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+        final token = await _storageService.getToken();
+
+        if (!mounted) return;
+
+        if (token != null && token.isNotEmpty) {
+          // Já logado: Pula direto para a lista de treinos
+          Navigator.of(context).pushReplacementNamed(AppRoutes.workouts);
+        } else {
+          // Não logado: Vai para o login
+          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+        }
       }
     });
   }

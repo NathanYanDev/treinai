@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../app_routes.dart';
 import '../../../core/services/secure_storage_service.dart';
+import '../../../app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 
@@ -183,9 +183,8 @@ class _LoginPageState extends State<LoginPage> {
                           );
                           return;
                         }
-                        // Simulacao, trocar por token real no fluxo de auth.
-                        const mockToken =
-                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.MockToken';
+                        // Simulação, trocar depois.
+                        const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.MockToken";
 
                         await _storageService.saveToken(mockToken);
 
