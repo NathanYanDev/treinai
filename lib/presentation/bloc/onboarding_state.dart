@@ -10,6 +10,8 @@ import '../../domain/models/age_range.dart';
 import '../../domain/models/physical_limitation.dart';
 import '../../domain/models/muscular_focus.dart';
 
+enum OnboardingStatus { idle, loading, success, failure }
+
 class OnboardingState extends Equatable {
   const OnboardingState({
     this.currentStep = 1,
@@ -22,6 +24,8 @@ class OnboardingState extends Equatable {
     this.ageRange,
     this.limitations = const {},
     this.muscularFocus = const {},
+    this.status = OnboardingStatus.idle,
+    this.errorMessage,
   });
 
   final int currentStep;
@@ -34,8 +38,11 @@ class OnboardingState extends Equatable {
   final AgeRange? ageRange;
   final Set<PhysicalLimitation> limitations;
   final Set<MuscularFocus> muscularFocus;
+  final OnboardingStatus status;
+  final String? errorMessage;
 
   bool get canAdvance => goal != null;
+  bool get isLoading => status == OnboardingStatus.loading;
 
   OnboardingState copyWith({
     int? currentStep,
@@ -48,6 +55,8 @@ class OnboardingState extends Equatable {
     AgeRange? ageRange,
     Set<PhysicalLimitation>? limitations,
     Set<MuscularFocus>? muscularFocus,
+    OnboardingStatus? status,
+    String? errorMessage,
   }) {
     return OnboardingState(
       currentStep: currentStep ?? this.currentStep,
@@ -60,6 +69,8 @@ class OnboardingState extends Equatable {
       ageRange: ageRange ?? this.ageRange,
       limitations: limitations ?? this.limitations,
       muscularFocus: muscularFocus ?? this.muscularFocus,
+      status: status ?? this.status,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
@@ -75,5 +86,7 @@ class OnboardingState extends Equatable {
     ageRange,
     limitations,
     muscularFocus,
+    status,
+    errorMessage,
   ];
 }
