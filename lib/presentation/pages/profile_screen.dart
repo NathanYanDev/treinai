@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/services/secure_storage_service.dart';
 import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -162,7 +163,12 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.logout_rounded,
                     label: 'Sair da conta',
                     isDestructive: true,
-                    onTap: () {
+                    onTap: () async {
+                      final storageService = SecureStorageService();
+                      await storageService.deleteToken();
+
+                      if (!context.mounted) return;
+                      
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         AppRoutes.login,

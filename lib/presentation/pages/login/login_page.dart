@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/services/secure_storage_service.dart';
 import '../../../app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
@@ -12,6 +13,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _storageService = SecureStorageService();
+
   final TextEditingController _emailController = TextEditingController(
     text: 'joao@email.com',
   );
@@ -169,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         final email = _emailController.text.trim();
                         final pass = _passwordController.text.trim();
                         if (email.isEmpty || pass.isEmpty) {
@@ -180,6 +183,13 @@ class _LoginPageState extends State<LoginPage> {
                           );
                           return;
                         }
+                        // Simulação, trocar depois.
+                        const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.MockToken";
+
+                        await _storageService.saveToken(mockToken);
+
+                        if (!mounted) return;
+
                         Navigator.of(context).pushReplacementNamed(
                           AppRoutes.onboarding,
                         );
