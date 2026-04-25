@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+
+import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../pages/edit_profile_screen.dart';
+import '../../core/services/secure_storage_service.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -15,6 +18,18 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+                child: Center(
+                  child: Text(
+                    '09 · PERFIL',
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.textTertiary,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
                 child: Column(
@@ -80,12 +95,7 @@ class ProfileScreen extends StatelessWidget {
 
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const EditProfileScreen(),
-                          ),
-                        );
+                        Navigator.of(context).pushNamed(AppRoutes.editProfile);
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: AppColors.bgElevated,
@@ -122,7 +132,7 @@ class ProfileScreen extends StatelessWidget {
                   _ProfileRow(
                     icon: Icons.location_on_outlined,
                     label: 'Local de treino',
-                    value: 'Academia completa',
+                    value: 'Academia',
                   ),
                   _ProfileRow(
                     icon: Icons.calendar_today_outlined,
@@ -153,10 +163,15 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.logout_rounded,
                     label: 'Sair da conta',
                     isDestructive: true,
-                    onTap: () {
+                    onTap: () async {
+                      final storageService = SecureStorageService();
+                      await storageService.deleteToken();
+
+                      if (!context.mounted) return;
+                      
                       Navigator.pushNamedAndRemoveUntil(
                         context,
-                        '/login',
+                        AppRoutes.login,
                         (route) => false,
                       );
                     },
@@ -190,7 +205,13 @@ class _ProfileSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTypography.headingSm),
+          Text(
+            title,
+            style: AppTypography.headingSm.copyWith(
+              color: AppColors.lime500,
+              letterSpacing: 1.2,
+            ),
+          ),
           const SizedBox(height: 10),
           ...children,
         ],
