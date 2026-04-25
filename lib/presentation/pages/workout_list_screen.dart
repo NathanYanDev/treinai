@@ -1,15 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/models/workout_template_mapper.dart';
 import '../../domain/models/workout_template.dart';
-import '../../domain/workout_mock_data.dart';
+import '../bloc/workout_cubit.dart';
+import '../bloc/workout_state.dart';
 
 const _kWeekShort = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
-class WorkoutListScreen extends StatelessWidget {
+class WorkoutListScreen extends StatefulWidget {
   const WorkoutListScreen({super.key});
+
+  @override
+  State<WorkoutListScreen> createState() => _WorkoutListScreenState();
+}
+
+class _WorkoutListScreenState extends State<WorkoutListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WorkoutCubit>().loadWorkouts();
+    });
+  }
 
   static String _greeting() {
     final h = DateTime.now().hour;
@@ -126,20 +142,53 @@ class WorkoutListScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            ...WorkoutMockData.templates.map(
-              (w) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _WorkoutCard(
-                  template: w,
-                  isToday: w.scheduledWeekdays.contains(today),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      AppRoutes.workoutDetail,
-                      arguments: w,
-                    );
-                  },
-                ),
-              ),
+            BlocBuilder<WorkoutCubit, WorkoutState>(
+              builder: (context, state) {
+                if (state.isLoading) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final templates = state.workouts.map((w) => w.toTemplate()).toList();
+
+                if (templates.isEmpty) {
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardBackground,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.cardBorder),
+                    ),
+                    child: Text(
+                      state.errorMessage ?? 'Nenhum treino disponível no momento.',
+                      style: AppTypography.bodyMd,
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: templates
+                      .map(
+                        (w) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _WorkoutCard(
+                            template: w,
+                            isToday: w.scheduledWeekdays.contains(today),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                AppRoutes.workoutDetail,
+                                arguments: w,
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                      .toList(),
+                );
+              },
             ),
           ],
         ),

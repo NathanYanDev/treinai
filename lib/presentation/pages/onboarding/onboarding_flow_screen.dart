@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../app_routes.dart';
 import '../../bloc/onboarding_cubit.dart';
 import '../../bloc/onboarding_state.dart';
+import '../../../domain/repositories/auth_repository.dart';
 import '../../../domain/repositories/onboarding_repository.dart';
 import 'onboarding_router.dart';
 
@@ -16,6 +17,7 @@ class OnboardingFlowScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => OnboardingCubit(
         repository: context.read<OnboardingRepository>(),
+        authRepository: context.read<AuthRepository>(),
       ),
       child: BlocListener<OnboardingCubit, OnboardingState>(
         listenWhen: (prev, curr) => curr.hasSubmitted && !prev.hasSubmitted,

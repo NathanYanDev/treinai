@@ -10,16 +10,22 @@ import '../../domain/models/age_range.dart';
 import '../../domain/models/physical_limitation.dart';
 import '../../domain/models/muscular_focus.dart';
 import '../../domain/models/user_onboarding.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../../domain/repositories/onboarding_repository.dart';
 
 import 'onboarding_state.dart';
 
 class OnboardingCubit extends Cubit<OnboardingState> {
-  OnboardingCubit({OnboardingRepository? repository})
+  OnboardingCubit({
+    OnboardingRepository? repository,
+    AuthRepository? authRepository,
+  })
       : _repository = repository,
+        _authRepository = authRepository,
         super(const OnboardingState());
 
   final OnboardingRepository? _repository;
+  final AuthRepository? _authRepository;
 
   static const int totalSteps = 9;
 
@@ -131,8 +137,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     );
 
     try {
+      final session = await _authRepository?.getCurrentSession();
+      final userId = session?.userId ?? 'current_user';
       final onboarding = UserOnboarding(
-        userId: 'current_user', // substituir pelo ID real após auth
+        userId: userId,
         goal: s.goal!.promptKey,
         location: s.location!.promptKey,
         daysPerWeek: int.parse(s.daysPerWeek!.promptKey),

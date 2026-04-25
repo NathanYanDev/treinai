@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../app_routes.dart';
-import '../../../core/services/secure_storage_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../domain/repositories/auth_repository.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,8 +14,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _storageService = SecureStorageService();
-
   final TextEditingController _emailController = TextEditingController(
     text: 'joao@email.com',
   );
@@ -183,17 +182,25 @@ class _LoginPageState extends State<LoginPage> {
                           );
                           return;
                         }
-                        // Simulacao, trocar por token real no fluxo de auth.
-                        const mockToken =
-                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.MockToken';
-
-                        await _storageService.saveToken(mockToken);
+                        final authRepository = context.read<AuthRepository>();
+                        final session = await authRepository.login(
+                          email: email,
+                          password: pass,
+                        );
 
                         if (!mounted) return;
 
-                        Navigator.of(context).pushReplacementNamed(
-                          AppRoutes.onboarding,
-                        );
+                        if (session.isFallbackToken) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'API indisponível. Login local seguro ativado.',
+                              ),
+                            ),
+                          );
+                        }
+
+                        Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
                       },
                       child: Text('ENTRAR', style: AppTypography.buttonLg),
                     ),

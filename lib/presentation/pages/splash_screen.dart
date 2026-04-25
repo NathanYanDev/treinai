@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../core/services/secure_storage_service.dart';
 import '../../app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/repositories/auth_repository.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,7 +16,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  final _storageService = SecureStorageService();
 
   @override
   void initState() {
@@ -27,11 +27,11 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.addStatusListener((status) async {
       if (status == AnimationStatus.completed && mounted) {
-        final token = await _storageService.getToken();
+        final session = await context.read<AuthRepository>().getCurrentSession();
 
         if (!mounted) return;
 
-        if (token != null && token.isNotEmpty) {
+        if (session != null) {
           // Já logado: Pula direto para a lista de treinos
           Navigator.of(context).pushReplacementNamed(AppRoutes.workouts);
         } else {
