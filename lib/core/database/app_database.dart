@@ -34,6 +34,9 @@ class AppDatabase {
       onUpgrade: (db, oldVersion, newVersion) async {
         await _migrate(db, oldVersion, newVersion);
       },
+      onOpen: (db) async {
+        await _ensureAuthSessionTable(db);
+      },
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -119,6 +122,16 @@ class AppDatabase {
       )
     ''');
 
+    batch.execute('''
+      CREATE TABLE auth_session (
+        user_id TEXT PRIMARY KEY,
+        jwt_token TEXT NOT NULL,
+        token_type TEXT,
+        expires_at TEXT,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+
     batch.execute('CREATE INDEX idx_workouts_user_id ON workouts(user_id)');
     batch.execute(
       'CREATE INDEX idx_workout_exercises_workout_id ON workout_exercises(workout_id)',
@@ -143,6 +156,21 @@ class AppDatabase {
       await batch.commit(noResult: true);
 
       await _createSchema(db);
+      return;
     }
+
+    await _ensureAuthSessionTable(db);
+  }
+
+  Future<void> _ensureAuthSessionTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS auth_session (
+        user_id TEXT PRIMARY KEY,
+        jwt_token TEXT NOT NULL,
+        token_type TEXT,
+        expires_at TEXT,
+        updated_at TEXT NOT NULL
+      )
+    ''');
   }
 }
