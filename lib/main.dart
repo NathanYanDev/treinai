@@ -35,6 +35,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     final apiDataSource = ApiDataSource(
       baseUrl: 'https://api.treinai.com.br/v1',
+      apiKey: '393e9f12-069f-4fb2-b49b-fa5d48db3f7d',
     );
 
     return MultiRepositoryProvider(

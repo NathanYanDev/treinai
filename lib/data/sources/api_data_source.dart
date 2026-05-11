@@ -11,13 +11,15 @@ class ApiException implements Exception {
 }
 
 class ApiDataSource {
-  ApiDataSource({required this.baseUrl, this.authToken});
+  ApiDataSource({required this.baseUrl, this.authToken, this.apiKey});
 
   final String baseUrl;
   String? authToken;
+  final String? apiKey;
 
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
+        if (apiKey != null) 'X-Api-Key': apiKey!,
         if (authToken != null) 'Authorization': 'Bearer $authToken',
       };
 
