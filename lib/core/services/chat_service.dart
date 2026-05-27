@@ -1,6 +1,4 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../dtos/chat_dto.dart';
+import '../../core/services/secure_storage_service.dart';
 
 class ChatService {
   final String baseUrl = "https://mobile-ios-ia.zani0x03.eti.br/api/ai/chat";

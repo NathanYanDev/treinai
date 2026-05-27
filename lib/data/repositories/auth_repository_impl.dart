@@ -25,9 +25,12 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
+      final String baseUrl = "https://mobile-ios-login.zani0x03.eti.br/api/auth/login";
+      final String sistemaId = "393e9f12-069f-4fb2-b49b-fa5d48db3f7d";
+
       final response = await _dataSource.post(
-        '/auth/login',
-        {'email': email, 'password': password},
+        baseUrl,
+        {'username': email, 'password': password, 'sistemaId':sistemaId},
       ) as Map<String, dynamic>;
 
       final token = _extractToken(response);
