@@ -27,15 +27,20 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.addStatusListener((status) async {
       if (status == AnimationStatus.completed && mounted) {
-        final session = await context.read<AuthRepository>().getCurrentSession();
+        try {
+          final session = await context.read<AuthRepository>().getCurrentSession();
 
-        if (!mounted) return;
+          if (!mounted) return;
 
-        if (session != null) {
-          // Já logado: Pula direto para a lista de treinos
-          Navigator.of(context).pushReplacementNamed(AppRoutes.workouts);
-        } else {
-          // Não logado: Vai para o login
+          if (session != null) {
+            // Já logado: Pula direto para a lista de treinos
+            Navigator.of(context).pushReplacementNamed(AppRoutes.workouts);
+          } else {
+            // Não logado: Vai para o login
+            Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+          }
+        } catch (_) {
+          if (!mounted) return;
           Navigator.of(context).pushReplacementNamed(AppRoutes.login);
         }
       }
