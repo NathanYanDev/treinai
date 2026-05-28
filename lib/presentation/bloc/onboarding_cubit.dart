@@ -161,8 +161,9 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     } catch (e) {
       emit(
         state.copyWith(
+          hasSubmitted: true,
           status: OnboardingStatus.failure,
-          errorMessage: 'Não foi possível salvar o perfil. Tente novamente.',
+          clearErrorMessage: true,
         ),
       );
     }

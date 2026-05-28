@@ -16,7 +16,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController(
-    text: 'joao@email.com',
+    text: 'joao123',
   );
   final TextEditingController _passwordController = TextEditingController(
     text: '123456',
@@ -94,14 +94,14 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 40),
 
-              // ── Email ─────────────────────────────────────────────────────
-              Text('EMAIL', style: AppTypography.bodySm),
+              // ── LOGIN ─────────────────────────────────────────────────────
+              Text('USUÁRIO', style: AppTypography.bodySm),
 
               const SizedBox(height: 8),
 
               TextField(
                 controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.text,
                 style: AppTypography.inputValue,
                 decoration: InputDecoration(
                   // Campo preenchido → fundo levemente esverdeado + borda lime
