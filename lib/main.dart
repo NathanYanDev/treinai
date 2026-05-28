@@ -13,9 +13,9 @@ import 'domain/repositories/workout_repository.dart';
 import 'presentation/pages/ai_generating_screen.dart';
 import 'presentation/pages/edit_profile_screen.dart';
 import 'presentation/pages/login/login_page.dart';
+import 'presentation/pages/register/register_page.dart';
 import 'presentation/pages/onboarding/onboarding_flow_screen.dart';
 import 'presentation/pages/profile_screen.dart';
-import 'presentation/pages/register_page.dart';
 import 'presentation/pages/splash_screen.dart';
 import 'presentation/pages/workout_complete_args.dart';
 import 'presentation/pages/workout_complete_screen.dart';
@@ -44,20 +44,17 @@ class App extends StatelessWidget {
           create: (_) => AuthRepositoryImpl(dataSource: apiDataSource),
         ),
         RepositoryProvider<OnboardingRepository>(
-          create: (_) =>
-              OnboardingRepositoryImpl(dataSource: apiDataSource),
+          create: (_) => OnboardingRepositoryImpl(dataSource: apiDataSource),
         ),
         RepositoryProvider<WorkoutRepository>(
-          create: (_) =>
-              WorkoutRepositoryImpl(dataSource: apiDataSource),
+          create: (_) => WorkoutRepositoryImpl(dataSource: apiDataSource),
         ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<WorkoutCubit>(
-            create: (context) => WorkoutCubit(
-              repository: context.read<WorkoutRepository>(),
-            ),
+            create: (context) =>
+                WorkoutCubit(repository: context.read<WorkoutRepository>()),
           ),
         ],
         child: MaterialApp(
@@ -71,14 +68,18 @@ class App extends StatelessWidget {
                 return MaterialPageRoute<void>(
                   settings: settings,
                   builder: (_) => WorkoutDetailScreen(
-                    template: WorkoutDetailScreen.resolveArgs(settings.arguments),
+                    template: WorkoutDetailScreen.resolveArgs(
+                      settings.arguments,
+                    ),
                   ),
                 );
               case AppRoutes.workoutExecution:
                 return MaterialPageRoute<void>(
                   settings: settings,
                   builder: (_) => WorkoutExecutionScreen(
-                    template: WorkoutExecutionScreen.resolveArgs(settings.arguments),
+                    template: WorkoutExecutionScreen.resolveArgs(
+                      settings.arguments,
+                    ),
                   ),
                 );
               case AppRoutes.workoutComplete:

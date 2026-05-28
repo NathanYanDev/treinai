@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import '../../core/services/secure_storage_service.dart';
 import '../../domain/models/auth_session.dart';
@@ -52,7 +53,6 @@ class AuthRepositoryImpl implements AuthRepository {
       await _persistSession(session);
       return session;
     } catch (e) {
-      print('ERRO NA API DE LOGIN: $e');
       final fallbackToken = _buildFallbackToken(email);
       final session = AuthSession(
         userId: email,
@@ -63,6 +63,45 @@ class AuthRepositoryImpl implements AuthRepository {
       );
       await _persistSession(session);
       return session;
+    }
+  }
+
+  @override
+  Future<void> register({
+    required String name,
+    required String surname,
+    required String login,
+    required String email,
+    required String password,
+  }) async {
+    final String baseUrl =
+        "https://mobile-ios-login.zani0x03.eti.br/api/register";
+    final String sistemaId = "393e9f12-069f-4fb2-b49b-fa5d48db3f7d";
+
+    try {
+      final response = await http.post(
+        Uri.parse(baseUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "name": name,
+          "surname": surname,
+          "login": login,
+          "email": email,
+          "password": password,
+          "sistemaId": sistemaId,
+        }),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return;
+      } else {
+        throw Exception("Erro do servidor: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('ERRO NO CADASTRO: $e');
+      throw Exception(
+        'Falha ao criar conta. Verifique os dados e tente novamente.',
+      );
     }
   }
 
