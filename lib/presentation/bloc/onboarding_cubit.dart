@@ -120,7 +120,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         s.minutesPerSession == null ||
         s.level == null ||
         s.gender == null ||
-        s.ageRange == null) {
+        s.ageRange == null ||
+        s.muscularFocus.isEmpty) {
       emit(
         state.copyWith(
           status: OnboardingStatus.failure,
@@ -131,12 +132,20 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     }
 
     emit(
-      state.copyWith(status: OnboardingStatus.loading, clearErrorMessage: true),
+      state.copyWith(
+        status: OnboardingStatus.loading,
+        hasSubmitted: false,
+        clearErrorMessage: true,
+      ),
     );
 
     try {
       final session = await _authRepository?.getCurrentSession();
       final userId = session?.userId ?? 'current_user';
+      final limitations = s.limitations.isEmpty
+          ? [PhysicalLimitation.none.promptKey]
+          : s.limitations.map((l) => l.promptKey).toList();
+
       final onboarding = UserOnboarding(
         userId: userId,
         goal: s.goal!.promptKey,
@@ -146,7 +155,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         level: s.level!.promptKey,
         gender: s.gender!.promptKey,
         ageRange: s.ageRange!.promptKey,
-        limitations: s.limitations.map((l) => l.promptKey).toList(),
+        limitations: limitations,
         muscularFocus: s.muscularFocus.map((f) => f.promptKey).toList(),
       );
 
@@ -155,15 +164,17 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         state.copyWith(
           hasSubmitted: true,
           status: OnboardingStatus.success,
+          submittedOnboarding: onboarding,
           clearErrorMessage: true,
         ),
       );
     } catch (e) {
+      final details = e.toString().replaceAll('Exception: ', '');
       emit(
         state.copyWith(
-          hasSubmitted: true,
+          hasSubmitted: false,
           status: OnboardingStatus.failure,
-          clearErrorMessage: true,
+          errorMessage: 'Não foi possível salvar o onboarding: $details',
         ),
       );
     }

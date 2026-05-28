@@ -1,5 +1,6 @@
 import '../../domain/models/user_onboarding.dart';
 import '../../domain/repositories/onboarding_repository.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../sources/api_data_source.dart';
 import '../sources/local/onboarding_local_data_source.dart';
 
@@ -18,31 +19,33 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
       final json = await dataSource.get('/onboarding/$userId')
           as Map<String, dynamic>;
       final remote = UserOnboarding.fromJson(json);
-      await _localDataSource.saveOnboarding(remote);
+      if (!kIsWeb) {
+        await _localDataSource.saveOnboarding(remote);
+      }
       return remote;
     } on ApiException catch (e) {
+      if (kIsWeb) {
+        return null;
+      }
       if (e.statusCode == 404) {
         return _localDataSource.getOnboarding(userId);
       }
       return _localDataSource.getOnboarding(userId);
     } catch (_) {
+      if (kIsWeb) {
+        return null;
+      }
       return _localDataSource.getOnboarding(userId);
     }
   }
 
   @override
   Future<UserOnboarding> saveOnboarding(UserOnboarding onboarding) async {
-    try {
-      final json = await dataSource.post(
-        '/onboarding',
-        onboarding.toJson(),
-      ) as Map<String, dynamic>;
-      final remote = UserOnboarding.fromJson(json);
-      await _localDataSource.saveOnboarding(remote);
-      return remote;
-    } catch (_) {
-      await _localDataSource.saveOnboarding(onboarding);
+    if (kIsWeb) {
+      // No Flutter Web, sqflite local persistence is unavailable in this app.
+      // Continue fluxo sem bloquear geração de treino via IA.
       return onboarding;
     }
+    return _localDataSource.saveOnboarding(onboarding);
   }
 }

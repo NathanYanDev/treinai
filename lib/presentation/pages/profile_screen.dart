@@ -20,14 +20,35 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-                child: Center(
-                  child: Text(
-                    '09 · PERFIL',
-                    style: AppTypography.bodySm.copyWith(
-                      color: AppColors.textTertiary,
-                      letterSpacing: 1.2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.bgAccent,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: AppColors.iconSecondary,
+                          size: 20,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: Text(
+                        '09 · PERFIL',
+                        style: AppTypography.bodySm.copyWith(
+                          color: AppColors.textTertiary,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(

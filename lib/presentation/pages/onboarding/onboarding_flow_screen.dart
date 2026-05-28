@@ -20,9 +20,29 @@ class OnboardingFlowScreen extends StatelessWidget {
         authRepository: context.read<AuthRepository>(),
       ),
       child: BlocListener<OnboardingCubit, OnboardingState>(
-        listenWhen: (prev, curr) => curr.hasSubmitted && !prev.hasSubmitted,
+        listenWhen: (prev, curr) =>
+            prev.status == OnboardingStatus.loading &&
+            curr.status != OnboardingStatus.loading,
         listener: (context, state) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.aiLoading);
+          if (state.status == OnboardingStatus.failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.errorMessage ??
+                      'Não foi possível concluir o onboarding.',
+                ),
+              ),
+            );
+            return;
+          }
+
+          final onboarding = state.submittedOnboarding;
+          if (onboarding == null) return;
+
+          Navigator.of(context).pushReplacementNamed(
+            AppRoutes.aiLoading,
+            arguments: onboarding,
+          );
         },
         child: const OnboardingRouter(),
       ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../app_routes.dart';
 import '../../bloc/onboarding_cubit.dart';
 import '../../bloc/onboarding_state.dart';
 import '../../../domain/models/muscular_focus.dart';
@@ -33,11 +32,7 @@ class OnboardingMuscularFocusPage extends StatelessWidget {
               .toList(),
           canAdvance: state.muscularFocus.isNotEmpty,
 
-          onNext: () {
-            cubit.nextStep();
-            Navigator.of(context).pushReplacementNamed(AppRoutes.aiLoading);
-          },
-          
+          onNext: cubit.nextStep,
           onBack: cubit.previousStep,
         );
       },

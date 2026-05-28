@@ -30,10 +30,10 @@ class ChatService {
             data['text'] ??
             "Resposta gerada com sucesso.";
       } else {
-        throw Exception("Erro da IA: \${response.statusCode}");
+        throw Exception('Erro da IA: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception("Erro ao conectar com a IA: \$e");
+      throw Exception('Erro ao conectar com a IA: $e');
     }
   }
 }

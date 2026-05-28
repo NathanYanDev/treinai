@@ -14,6 +14,7 @@ import 'data/sources/api_data_source.dart';
 import 'domain/repositories/auth_repository.dart';
 import 'domain/repositories/onboarding_repository.dart';
 import 'domain/repositories/workout_repository.dart';
+import 'domain/models/user_onboarding.dart';
 import 'presentation/pages/ai_generating_screen.dart';
 import 'presentation/pages/edit_profile_screen.dart';
 import 'presentation/pages/login/login_page.dart';
@@ -58,7 +59,7 @@ class App extends StatelessWidget {
           create: (_) => OnboardingRepositoryImpl(dataSource: apiDataSource),
         ),
         RepositoryProvider<WorkoutRepository>(
-          create: (_) => WorkoutRepositoryImpl(dataSource: apiDataSource),
+          create: (_) => WorkoutRepositoryImpl(),
         ),
       ],
       child: MultiBlocProvider(
@@ -109,7 +110,11 @@ class App extends StatelessWidget {
             AppRoutes.login: (_) => const LoginPage(),
             AppRoutes.register: (_) => const RegisterPage(),
             AppRoutes.onboarding: (_) => const OnboardingFlowScreen(),
-            AppRoutes.aiLoading: (_) => const AiGeneratingScreen(),
+            AppRoutes.aiLoading: (context) {
+              final onboarding =
+                  ModalRoute.of(context)?.settings.arguments as UserOnboarding?;
+              return AiGeneratingScreen(onboarding: onboarding);
+            },
             AppRoutes.workouts: (_) => const WorkoutListScreen(),
             AppRoutes.profile: (_) => const ProfileScreen(),
             AppRoutes.editProfile: (_) => const EditProfileScreen(),
