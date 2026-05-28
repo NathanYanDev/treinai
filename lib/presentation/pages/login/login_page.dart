@@ -5,7 +5,7 @@ import '../../../app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../domain/repositories/auth_repository.dart';
-import '../../../services/auth_service.dart';
+// import 'package:treinai/lib/core/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -201,7 +201,9 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         }
 
-                        Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
+                        Navigator.of(
+                          context,
+                        ).pushReplacementNamed(AppRoutes.onboarding);
                       },
                       child: Text('ENTRAR', style: AppTypography.buttonLg),
                     ),
