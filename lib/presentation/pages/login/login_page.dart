@@ -5,6 +5,7 @@ import '../../../app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../domain/repositories/auth_repository.dart';
+// import 'package:treinai/lib/core/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,7 +16,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController(
-    text: 'joao@email.com',
+    text: 'joao123',
   );
   final TextEditingController _passwordController = TextEditingController(
     text: '123456',
@@ -93,14 +94,14 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 40),
 
-              // ── Email ─────────────────────────────────────────────────────
-              Text('EMAIL', style: AppTypography.bodySm),
+              // ── LOGIN ─────────────────────────────────────────────────────
+              Text('USUÁRIO', style: AppTypography.bodySm),
 
               const SizedBox(height: 8),
 
               TextField(
                 controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.text,
                 style: AppTypography.inputValue,
                 decoration: InputDecoration(
                   // Campo preenchido → fundo levemente esverdeado + borda lime
@@ -200,7 +201,9 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         }
 
-                        Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
+                        Navigator.of(
+                          context,
+                        ).pushReplacementNamed(AppRoutes.onboarding);
                       },
                       child: Text('ENTRAR', style: AppTypography.buttonLg),
                     ),

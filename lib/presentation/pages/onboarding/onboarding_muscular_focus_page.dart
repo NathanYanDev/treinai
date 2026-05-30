@@ -31,6 +31,7 @@ class OnboardingMuscularFocusPage extends StatelessWidget {
               )
               .toList(),
           canAdvance: state.muscularFocus.isNotEmpty,
+
           onNext: cubit.nextStep,
           onBack: cubit.previousStep,
         );

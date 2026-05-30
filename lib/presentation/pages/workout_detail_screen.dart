@@ -64,15 +64,9 @@ class WorkoutDetailScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
                 children: [
-                  Text(
-                    template.codeLabel,
-                    style: AppTypography.bodyMd,
-                  ),
+                  Text(template.codeLabel, style: AppTypography.bodyMd),
                   const SizedBox(height: 4),
-                  Text(
-                    template.muscleTitle,
-                    style: AppTypography.headingLg,
-                  ),
+                  Text(template.muscleTitle, style: AppTypography.headingLg),
                   const SizedBox(height: 20),
                   Row(
                     children: [
@@ -94,7 +88,7 @@ class WorkoutDetailScreen extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _SummaryTile(
-                          value: '${template.sessionsHighlight}',
+                          value: template.sessionsHighlight,
                           bottom: 'Séries',
                           highlightValue: true,
                         ),
@@ -207,10 +201,9 @@ class WorkoutDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed(
-                    AppRoutes.workoutExecution,
-                    arguments: template,
-                  );
+                  Navigator.of(
+                    context,
+                  ).pushNamed(AppRoutes.workoutExecution, arguments: template);
                 },
                 child: const Text('INICIAR TREINO'),
               ),

@@ -9,6 +9,7 @@ import '../../domain/models/biological_sex.dart';
 import '../../domain/models/age_range.dart';
 import '../../domain/models/physical_limitation.dart';
 import '../../domain/models/muscular_focus.dart';
+import '../../domain/models/user_onboarding.dart';
 
 enum OnboardingStatus { idle, loading, success, failure }
 
@@ -27,6 +28,7 @@ class OnboardingState extends Equatable {
     this.hasSubmitted = false,
     this.status = OnboardingStatus.idle,
     this.errorMessage,
+    this.submittedOnboarding,
   });
 
   final int currentStep;
@@ -42,6 +44,7 @@ class OnboardingState extends Equatable {
   final bool hasSubmitted;
   final OnboardingStatus status;
   final String? errorMessage;
+  final UserOnboarding? submittedOnboarding;
 
   bool get canAdvance => goal != null;
   bool get isLoading => status == OnboardingStatus.loading;
@@ -60,7 +63,9 @@ class OnboardingState extends Equatable {
     bool? hasSubmitted,
     OnboardingStatus? status,
     String? errorMessage,
+    UserOnboarding? submittedOnboarding,
     bool clearErrorMessage = false,
+    bool clearSubmittedOnboarding = false,
   }) {
     return OnboardingState(
       currentStep: currentStep ?? this.currentStep,
@@ -76,6 +81,9 @@ class OnboardingState extends Equatable {
       hasSubmitted: hasSubmitted ?? this.hasSubmitted,
       status: status ?? this.status,
       errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      submittedOnboarding: clearSubmittedOnboarding
+          ? null
+          : (submittedOnboarding ?? this.submittedOnboarding),
     );
   }
 
@@ -94,5 +102,6 @@ class OnboardingState extends Equatable {
     hasSubmitted,
     status,
     errorMessage,
+    submittedOnboarding,
   ];
 }

@@ -50,4 +50,17 @@ class UserOnboarding {
         'limitations': limitations,
         'muscular_focus': muscularFocus,
       };
+
+  /// Payload enviado à API de IA (sem user_id).
+  Map<String, dynamic> toAiPayload() => {
+        'goal': goal,
+        'location': location,
+        'days_per_week': daysPerWeek,
+        'duration_minutes': durationMinutes,
+        'level': level,
+        'gender': gender,
+        'age_range': ageRange,
+        'limitations': limitations,
+        'muscular_focus': muscularFocus,
+      };
 }

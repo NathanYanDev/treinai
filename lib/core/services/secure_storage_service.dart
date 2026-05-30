@@ -13,6 +13,8 @@ class SecureStorageService {
   }
 
   Future<void> deleteToken() async {
+    await _storage.write(key: _jwtKey, value: '');
+
     await _storage.delete(key: _jwtKey);
   }
 }

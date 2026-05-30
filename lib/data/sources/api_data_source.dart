@@ -18,10 +18,10 @@ class ApiDataSource {
   final String? apiKey;
 
   Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        if (apiKey != null) 'X-Api-Key': apiKey!,
-        if (authToken != null) 'Authorization': 'Bearer $authToken',
-      };
+    'Content-Type': 'application/json',
+    'X-Api-Key': ?apiKey,
+    if (authToken != null) 'Authorization': 'Bearer $authToken',
+  };
 
   Future<dynamic> get(String path) async {
     final uri = Uri.parse('$baseUrl$path');
@@ -30,7 +30,8 @@ class ApiDataSource {
   }
 
   Future<dynamic> post(String path, Map<String, dynamic> body) async {
-    final uri = Uri.parse('$baseUrl$path');
+    // final uri = Uri.parse('$baseUrl$path');
+    final uri = Uri.parse(path);
     final response = await http.post(
       uri,
       headers: _headers,

@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,12 +14,13 @@ import 'data/sources/api_data_source.dart';
 import 'domain/repositories/auth_repository.dart';
 import 'domain/repositories/onboarding_repository.dart';
 import 'domain/repositories/workout_repository.dart';
+import 'domain/models/user_onboarding.dart';
 import 'presentation/pages/ai_generating_screen.dart';
 import 'presentation/pages/edit_profile_screen.dart';
 import 'presentation/pages/login/login_page.dart';
+import 'presentation/pages/register/register_page.dart';
 import 'presentation/pages/onboarding/onboarding_flow_screen.dart';
 import 'presentation/pages/profile_screen.dart';
-import 'presentation/pages/register_page.dart';
 import 'presentation/pages/splash_screen.dart';
 import 'presentation/pages/workout_complete_args.dart';
 import 'presentation/pages/workout_complete_screen.dart';
@@ -25,6 +30,13 @@ import 'presentation/pages/workout_list_screen.dart';
 import 'presentation/bloc/workout_cubit.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
   runApp(const App());
 }
 
@@ -44,20 +56,17 @@ class App extends StatelessWidget {
           create: (_) => AuthRepositoryImpl(dataSource: apiDataSource),
         ),
         RepositoryProvider<OnboardingRepository>(
-          create: (_) =>
-              OnboardingRepositoryImpl(dataSource: apiDataSource),
+          create: (_) => OnboardingRepositoryImpl(dataSource: apiDataSource),
         ),
         RepositoryProvider<WorkoutRepository>(
-          create: (_) =>
-              WorkoutRepositoryImpl(dataSource: apiDataSource),
+          create: (_) => WorkoutRepositoryImpl(),
         ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<WorkoutCubit>(
-            create: (context) => WorkoutCubit(
-              repository: context.read<WorkoutRepository>(),
-            ),
+            create: (context) =>
+                WorkoutCubit(repository: context.read<WorkoutRepository>()),
           ),
         ],
         child: MaterialApp(
@@ -71,14 +80,18 @@ class App extends StatelessWidget {
                 return MaterialPageRoute<void>(
                   settings: settings,
                   builder: (_) => WorkoutDetailScreen(
-                    template: WorkoutDetailScreen.resolveArgs(settings.arguments),
+                    template: WorkoutDetailScreen.resolveArgs(
+                      settings.arguments,
+                    ),
                   ),
                 );
               case AppRoutes.workoutExecution:
                 return MaterialPageRoute<void>(
                   settings: settings,
                   builder: (_) => WorkoutExecutionScreen(
-                    template: WorkoutExecutionScreen.resolveArgs(settings.arguments),
+                    template: WorkoutExecutionScreen.resolveArgs(
+                      settings.arguments,
+                    ),
                   ),
                 );
               case AppRoutes.workoutComplete:
@@ -97,7 +110,11 @@ class App extends StatelessWidget {
             AppRoutes.login: (_) => const LoginPage(),
             AppRoutes.register: (_) => const RegisterPage(),
             AppRoutes.onboarding: (_) => const OnboardingFlowScreen(),
-            AppRoutes.aiLoading: (_) => const AiGeneratingScreen(),
+            AppRoutes.aiLoading: (context) {
+              final onboarding =
+                  ModalRoute.of(context)?.settings.arguments as UserOnboarding?;
+              return AiGeneratingScreen(onboarding: onboarding);
+            },
             AppRoutes.workouts: (_) => const WorkoutListScreen(),
             AppRoutes.profile: (_) => const ProfileScreen(),
             AppRoutes.editProfile: (_) => const EditProfileScreen(),

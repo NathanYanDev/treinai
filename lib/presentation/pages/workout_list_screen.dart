@@ -8,6 +8,7 @@ import '../../domain/models/workout_template_mapper.dart';
 import '../../domain/models/workout_template.dart';
 import '../bloc/workout_cubit.dart';
 import '../bloc/workout_state.dart';
+import '../../core/services/chat_service.dart';
 
 const _kWeekShort = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
@@ -34,19 +35,125 @@ class _WorkoutListScreenState extends State<WorkoutListScreen> {
     return 'Boa noite';
   }
 
+  Future<void> _abrirChatIA(BuildContext context) async {
+    final TextEditingController promptController = TextEditingController();
+    String respostaIA = "";
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              backgroundColor: AppColors.cardBackground,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: const BorderSide(color: AppColors.cardBorder),
+              ),
+              title: Row(
+                children: [
+                  const Icon(Icons.smart_toy_rounded, color: AppColors.lime500),
+                  const SizedBox(width: 10),
+                  Text('TreinAI', style: AppTypography.headingSm),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: promptController,
+                    style: AppTypography.bodyMd,
+                    maxLines: 3,
+                    minLines: 1,
+                    decoration: InputDecoration(
+                      hintText: 'Ex: Dica de treino para pernas...',
+                      hintStyle: AppTypography.bodyMd.copyWith(color: AppColors.textTertiary),
+                      filled: true,
+                      fillColor: AppColors.bgElevated,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (isLoading)
+                    const Center(
+                      child: CircularProgressIndicator(color: AppColors.lime500),
+                    )
+                  else if (respostaIA.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.bgElevated,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.cardBorder),
+                      ),
+                      child: Text(
+                        respostaIA,
+                        style: AppTypography.bodyMd.copyWith(color: AppColors.textSecondary),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'FECHAR',
+                    style: AppTypography.buttonMd.copyWith(color: AppColors.textTertiary),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.lime500,
+                    foregroundColor: AppColors.black,
+                  ),
+                  onPressed: () async {
+                    if (promptController.text.trim().isEmpty) return;
+
+                    setStateDialog(() => isLoading = true);
+
+                    try {
+                      final chatService = ChatService();
+                      final resposta = await chatService.sendMessage(promptController.text);
+
+                      setStateDialog(() {
+                        respostaIA = resposta;
+                        isLoading = false;
+                      });
+                    } catch (e) {
+                      setStateDialog(() {
+                        respostaIA = "Erro ao conectar: $e";
+                        isLoading = false;
+                      });
+                    }
+                  },
+                  child: const Text('ENVIAR'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+  // ---------------------------------
+
   @override
   Widget build(BuildContext context) {
     final today = DateTime.now().weekday;
 
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
+      // BOTÃO FLUTUANTE DA IA AQUI!
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Novo treino em breve.')),
-          );
-        },
-        child: const Icon(Icons.add, size: 32),
+        backgroundColor: AppColors.lime500,
+        onPressed: () => _abrirChatIA(context),
+        child: const Icon(Icons.smart_toy_rounded, size: 28, color: AppColors.black),
       ),
       body: SafeArea(
         child: ListView(

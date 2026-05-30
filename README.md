@@ -42,6 +42,31 @@ lib/
    flutter pub run build_runner build --delete-conflicting-outputs
    ```
 
+## ⚠️ Passo obrigatório após Pull/Merge
+Sempre que atualizar a branch (`git pull`, `merge`, `rebase`), rode:
+
+```bash
+flutter pub get
+```
+
+Isso evita erros por dependências novas/atualizadas (ex.: pacote adicionado no `pubspec.yaml`).
+
+Checklist rápido para não quebrar o app:
+
+```bash
+flutter pub get
+flutter analyze
+flutter run
+```
+
+Se aparecer erro estranho após atualização de dependências:
+
+```bash
+flutter clean
+flutter pub get
+flutter run
+```
+
 ## 🗄️ Modelagem de Dados (Local)
 O banco de dados local armazena:
 - **Users & Profiles:** Dados do onboarding.

@@ -1,12 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app_routes.dart';
+import '../../core/services/ai_workout_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/models/user_onboarding.dart';
+import '../../domain/repositories/workout_repository.dart';
+import '../bloc/workout_cubit.dart';
 
-enum _AiStepState { pending, done, active }
+enum _AiStepState { pending, done, active, error }
 
 class _AiStep {
   const _AiStep({required this.label, required this.state});
@@ -16,7 +21,9 @@ class _AiStep {
 }
 
 class AiGeneratingScreen extends StatefulWidget {
-  const AiGeneratingScreen({super.key});
+  const AiGeneratingScreen({super.key, this.onboarding});
+
+  final UserOnboarding? onboarding;
 
   @override
   State<AiGeneratingScreen> createState() => _AiGeneratingScreenState();
@@ -30,20 +37,27 @@ class _AiGeneratingScreenState extends State<AiGeneratingScreen> {
     'Calculando carga e descanso',
   ];
 
+  final _aiWorkoutService = AiWorkoutService();
+
   int _phase = 0;
-  Timer? _timer;
+  Timer? _phaseTimer;
+  bool _isGenerating = false;
+  String? _errorMessage;
 
   List<_AiStep> get _steps {
+    final failed = _errorMessage != null;
     return List.generate(_labels.length, (i) {
-      final _AiStepState s;
-      if (_phase > i) {
-        s = _AiStepState.done;
-      } else if (_phase == i && _phase < _labels.length) {
-        s = _AiStepState.active;
+      final _AiStepState state;
+      if (failed && i == _labels.length - 1) {
+        state = _AiStepState.error;
+      } else if (_phase > i) {
+        state = _AiStepState.done;
+      } else if (_phase == i) {
+        state = _AiStepState.active;
       } else {
-        s = _AiStepState.pending;
+        state = _AiStepState.pending;
       }
-      return _AiStep(label: _labels[i], state: s);
+      return _AiStep(label: _labels[i], state: state);
     });
   }
 
@@ -55,19 +69,70 @@ class _AiGeneratingScreenState extends State<AiGeneratingScreen> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 900), (_) {
-      if (!mounted) return;
-      setState(() => _phase++);
-      if (_phase >= _labels.length) {
-        _timer?.cancel();
-        Navigator.of(context).pushReplacementNamed(AppRoutes.workouts);
+    _startPhaseAnimation();
+    _generateWorkouts();
+  }
+
+  void _startPhaseAnimation() {
+    _phaseTimer = Timer.periodic(const Duration(milliseconds: 900), (_) {
+      if (!mounted || _errorMessage != null) return;
+      if (_phase < _labels.length - 1) {
+        setState(() => _phase++);
       }
     });
   }
 
+  Future<void> _generateWorkouts() async {
+    final onboarding = widget.onboarding;
+    if (onboarding == null) {
+      setState(() {
+        _errorMessage = 'Perfil do onboarding não encontrado.';
+        _phase = _labels.length - 1;
+      });
+      return;
+    }
+
+    setState(() => _isGenerating = true);
+
+    try {
+      final workouts = await _aiWorkoutService.generateWorkoutPlan(onboarding);
+      final repository = context.read<WorkoutRepository>();
+
+      await repository.saveGeneratedWorkouts(
+        workouts,
+        userId: onboarding.userId,
+      );
+
+      if (!mounted) return;
+
+      await context.read<WorkoutCubit>().loadWorkouts(userId: onboarding.userId);
+
+      if (!mounted) return;
+
+      setState(() => _phase = _labels.length);
+      _phaseTimer?.cancel();
+
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacementNamed(AppRoutes.workouts);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = e.toString().replaceAll('Exception: ', '');
+        _phase = _labels.length - 1;
+      });
+      _phaseTimer?.cancel();
+    } finally {
+      if (mounted) {
+        setState(() => _isGenerating = false);
+      }
+    }
+  }
+
   @override
   void dispose() {
-    _timer?.cancel();
+    _phaseTimer?.cancel();
     super.dispose();
   }
 
@@ -109,9 +174,13 @@ class _AiGeneratingScreenState extends State<AiGeneratingScreen> {
                             color: AppColors.grey900,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
-                            Icons.bolt_rounded,
-                            color: AppColors.lime500,
+                          child: Icon(
+                            _errorMessage != null
+                                ? Icons.error_outline_rounded
+                                : Icons.bolt_rounded,
+                            color: _errorMessage != null
+                                ? AppColors.error
+                                : AppColors.lime500,
                             size: 36,
                           ),
                         ),
@@ -141,8 +210,13 @@ class _AiGeneratingScreenState extends State<AiGeneratingScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'A IA está analisando suas respostas e montando um plano personalizado.',
-                    style: AppTypography.bodyLg,
+                    _errorMessage ??
+                        'A IA está analisando suas respostas e montando um plano personalizado.',
+                    style: AppTypography.bodyLg.copyWith(
+                      color: _errorMessage != null
+                          ? AppColors.error
+                          : AppColors.textSecondary,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 36),
@@ -152,6 +226,25 @@ class _AiGeneratingScreenState extends State<AiGeneratingScreen> {
                       child: _StatusRow(step: s),
                     ),
                   ),
+                  if (_errorMessage != null) ...[
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _isGenerating
+                            ? null
+                            : () {
+                                setState(() {
+                                  _errorMessage = null;
+                                  _phase = 0;
+                                });
+                                _startPhaseAnimation();
+                                _generateWorkouts();
+                              },
+                        child: const Text('TENTAR NOVAMENTE'),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -171,22 +264,29 @@ class _StatusRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isActive = step.state == _AiStepState.active;
     final isDone = step.state == _AiStepState.done;
+    final isError = step.state == _AiStepState.error;
 
-    final borderW = isActive ? 2.0 : 1.0;
-    final borderColor = isActive
-        ? AppColors.lime500
-        : (isDone ? AppColors.lime500 : AppColors.borderSubtle);
+    final borderW = isActive || isError ? 2.0 : 1.0;
+    final borderColor = isError
+        ? AppColors.error
+        : isActive
+            ? AppColors.lime500
+            : (isDone ? AppColors.lime500 : AppColors.borderSubtle);
     final bg = isActive
         ? AppColors.lime500.withValues(alpha: 0.06)
         : AppColors.grey900;
 
-    final dotColor = isDone || isActive
-        ? AppColors.lime500
-        : AppColors.grey700;
+    final dotColor = isError
+        ? AppColors.error
+        : isDone || isActive
+            ? AppColors.lime500
+            : AppColors.grey700;
 
-    final textColor = isActive
-        ? AppColors.lime500
-        : (isDone ? AppColors.textSecondary : AppColors.grey500);
+    final textColor = isError
+        ? AppColors.error
+        : isActive
+            ? AppColors.lime500
+            : (isDone ? AppColors.textSecondary : AppColors.grey500);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),

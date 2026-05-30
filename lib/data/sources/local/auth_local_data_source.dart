@@ -25,23 +25,28 @@ class AuthLocalDataSource {
   }
 
   Future<AuthSession?> getSession() async {
-    final db = await _database.database;
-    final rows = await db.query('auth_session', limit: 1);
-    if (rows.isEmpty) return null;
+    try {
+      final db = await _database.database;
+      final rows = await db.query('auth_session', limit: 1);
+      if (rows.isEmpty) return null;
 
-    final row = rows.first;
-    final userId = row['user_id'] as String;
-    final token = row['jwt_token'] as String;
-    final type = row['token_type'] as String?;
-    final updatedAt = DateTime.parse(row['updated_at'] as String);
+      final row = rows.first;
+      final userId = row['user_id'] as String;
+      final token = row['jwt_token'] as String;
+      final type = row['token_type'] as String?;
+      final updatedAt = DateTime.parse(row['updated_at'] as String);
 
-    return AuthSession(
-      userId: userId,
-      email: userId,
-      token: token,
-      isFallbackToken: type == 'fallback',
-      updatedAt: updatedAt,
-    );
+      return AuthSession(
+        userId: userId,
+        email: userId,
+        token: token,
+        isFallbackToken: type == 'fallback',
+        updatedAt: updatedAt,
+      );
+    } on DatabaseException {
+      // Protege o splash em aparelhos com schema antigo/incompleto.
+      return null;
+    }
   }
 
   Future<void> clearSession() async {
